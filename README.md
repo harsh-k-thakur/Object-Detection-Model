@@ -4,13 +4,14 @@ This is a object detection model project.
 
 Let's start assuming we have nothing on my computer, and I will guide you with the installation required for Tensorflow GPU as well.
 
-## 1. Installing anaconda on Windows.
+## Setup Required
+### 1. Installing anaconda on Windows.
 I have used chocolatey to download and install anaconda on my pc. As I want to use Python3 I will open the power shell as administrator and run the command ```choco install anaconda3```. Enter `yes` when prompted. 
 
-## 2. Installing Microsoft Visual C++ Redistributable
+### 2. Installing Microsoft Visual C++ Redistributable
 Go to [Microsoft website](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-160) and install the redistributable .exe according to your architecture. My PC is 64 bits and so I have used `X64`. Once downloaded install it.
 
-## 3. Create a Conda Environment
+### 3. Create a Conda Environment
 Open Anaconda Prompt as administrator. the terminal will have `(base)` activated by default.
 Now in order to get the latest packages that can run tensorflow codes on GPU. Use the [tensorflow website](https://www.tensorflow.org/install/source_windows) and scroll down to Tested Build Configuration `GPU`. Check the lastest python version that can run the GPU.
 
@@ -43,3 +44,13 @@ tf.config.list_physical_devices('GPU')
 ```
 
 If it returns something like `[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]`. Then everything is working good. You can exit the python interpreter with command `exit()`.
+
+### 4. Installing open-cv
+This is the last thing we require to run the code.
+```
+pip install opencv-python
+```
+
+Thus you are good to go.
+
+## How to Run the Code
