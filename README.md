@@ -24,3 +24,22 @@ Once the virtual environment is created. Activate the new environment.
 ```
 conda activate tf_gpu
 ```
+
+Now we will install the required `CUDA` and `cuDNN`. Make sure that the python that we installed is supported by the `CUDA` and `cuDNN`. If you are not sure check [tensorflow website](https://www.tensorflow.org/install/source_windows) and scroll down to Tested Build Configuration `GPU`. During my installation, the supported `CUDA=11.2` and `cuDNN=8.1`. 
+```
+conda install cudatoolkit=11.2 cudnn=8.1 -c=conda-forge
+```
+
+And, then I will install the tenforflow-gpu. In my case the supported tensorflow GPU is 2.8
+```
+pip install tensorflow-gpu==2.8
+```
+
+Once tensorflow is installed, we can check whether it is able to detect the pysical GPU located on our pc.
+```
+python
+import tensorflow as tf
+tf.config.list_physical_devices('GPU')
+```
+
+If it returns something like `[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]`. Then everything is working good. You can exit the python interpreter with command `exit()`.
