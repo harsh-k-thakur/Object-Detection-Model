@@ -24,6 +24,8 @@ class Detector:
         self.colorList = np.random.uniform(low=0, high=255, size=(len(self.classesList), 3))
         print(len(self.classesList), len(self.colorList))
 
+        return
+
     def download_model(self, model_url):
 
         filename = os.path.basename(model_url)
@@ -31,3 +33,27 @@ class Detector:
 
         self.cache_dir = os.path.abspath("../Object-detection-model/pretrained_model/")
         os.makedirs(self.cache_dir, exist_ok=True)
+
+        get_file(fname=filename, 
+                origin=model_url, 
+                cache_dir=self.cache_dir,
+                cache_subdir="checkpoints", 
+                extract=True)
+        
+        return 
+
+    def load_model(self):
+        print("Loading the Model", self.model_name)
+        tf.keras.backend.clear_session()
+        self.model = tf.saved_model.load(os.path.join(self.cache_dir, "checkpoints", self.model_name, "saved_model"))
+
+        print("Model '" + self.model_name + "' loaded successfully...")
+
+        return
+
+    def predict_image(self, image_path):
+        image = cv2.imread(image_path)
+
+        cv2.imshow("Result", image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
