@@ -1,8 +1,7 @@
-from genericpath import exists
-from inspect import ClassFoundException
-from lib2to3.pgen2.grammar import opmap_raw
 import os
 import time
+from tracemalloc import start
+from turtle import st
 
 import cv2
 import tensorflow as tf
@@ -14,15 +13,29 @@ np.random.seed(6)
 
 class Detector:
     def __init__(self) -> None:
+        '''
+        This function is used to initialize the Detector
+        There is nothing in the initalize method at this point
+        '''
         pass
 
     def readClasses(self, classesFilePath):
+        '''
+        There are around 92 classes which coco model can pick up right out of the box.
+        This classes are listed in the coco.names file under the data/label folder.
+
+        This method is used to save those classes in a variable
+        Which can be used in the later stage of the program
+
+        We have initalized each class with a different color, 
+        and so each bounding box is will have different color in order to easily classify.
+        '''
         with open(classesFilePath, 'r') as f:
             self.classesList = f.read().splitlines()
 
         # Color list
         self.colorList = np.random.uniform(low=0, high=255, size=(len(self.classesList), 3))
-        print(len(self.classesList), len(self.colorList))
+        # print(len(self.classesList), len(self.colorList))
 
         return
 
@@ -89,6 +102,15 @@ class Detector:
                 cv2.line(image, (x_min, y_min), (x_min+line_width, y_min), class_color, thickness=5)
                 cv2.line(image, (x_min, y_min), (x_min, y_min+line_width), class_color, thickness=5)
 
+                cv2.line(image, (x_max, y_min), (x_max-line_width, y_min), class_color, thickness=5)
+                cv2.line(image, (x_max, y_min), (x_max, y_min+line_width), class_color, thickness=5)
+
+                cv2.line(image, (x_min, y_max), (x_min+line_width, y_max), class_color, thickness=5)
+                cv2.line(image, (x_min, y_max), (x_min, y_max-line_width), class_color, thickness=5)
+
+                cv2.line(image, (x_max, y_max), (x_max-line_width, y_max), class_color, thickness=5)
+                cv2.line(image, (x_max, y_max), (x_max, y_max-line_width), class_color, thickness=5)
+
         return image
 
     def predict_image(self, image_path, threshold=0.5):
@@ -96,7 +118,40 @@ class Detector:
 
         bbox_image = self.create_bounding_box(image)
 
-        cv2.imwrite(self.model_name + ".jpg", bbox_image)
+        output_path = os.path.abspath("../Object-detection-model/data/images/output/" + self.model_name + ".jpg")
+        cv2.imwrite(output_path, bbox_image)
         cv2.imshow("Result", bbox_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+
+        return
+    
+    def predict_video(self, video_path, threshold=0.5):
+        cap = cv2.VideoCapture(video_path)
+
+        if cap.isOpened() == False:
+            print("Error Opening the file...")
+            return
+
+        start_time = 0
+        (success, image) = cap.read()
+
+        while success:
+            current_time = time.time()
+
+            fps = 1/(current_time - start_time)
+            start_time = current_time
+
+            bbox_image = self.create_bounding_box(image, threshold)
+
+            cv2.putText(bbox_image, "FPS: " + str(int(fps)), (20, 70), cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), thickness=2)
+            cv2.imshow("Result", bbox_image)
+
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
+
+            (success, image) = cap.read()
+
+        cv2.destroyAllWindows()
+        return
